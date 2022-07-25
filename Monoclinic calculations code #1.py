@@ -10,6 +10,7 @@ from scipy.optimize import fsolve
 import math as ma
 
 #input measured velocities (km/s) and density (10^3 kg/m^3)
+#velocity numeration is according to that in Dunk, Saunders 1984
 v_1=5.130
 v_2=1.900
 v_3=2.520
