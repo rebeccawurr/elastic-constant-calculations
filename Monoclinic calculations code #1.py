@@ -4,55 +4,89 @@ Created on Mon Mar  7 11:50:20 2022
 
 @author: cqf52775
 """
+print('MONOCLINIC ELASTIC CONSTANT CALCULATIONS')
+print('- Using the method in K.S. Aleksandrov (1958) and velocity numeration from Dunk, Saunders (1984)')
+print('- Requires a crystal cut for 6 orientations ([100],[010],[001],[101],[110],[011]) each with 3 polarizations.')
+print('- Tested with velocities from Dunk, Saunders (1984): vlst=5.130,1.900,2.520,2.460,4.460,1.940,2.510,2.490,4.050,2.270,2.280,4.530,4.560,2.460,2.460,4.550,1.840,2.210; rho=1.68')
 
 import numpy as np
 from scipy.optimize import fsolve
 import math as ma
-
 #input measured velocities (km/s) and density (10^3 kg/m^3)
-#velocity numeration is according to that in Dunk, Saunders 1984
-v_1=5.130
-v_2=1.900
-v_3=2.520
-v_4=2.460
-v_5=4.460
-v_6=1.940
-v_7=2.510
-v_8=2.490
-v_9=4.050
-v_10=2.270
-v_11=2.280
-v_12=4.530
-v_13=4.560
-v_14=2.460
-v_15=2.460
-v_16=4.550
-v_17=1.840
-v_18=2.210
+#velocity numeration is according to that in Dunk, Saunders (1984)
+#tested with velocities from vlst=5.130,1.900,2.520,2.460,4.460,1.940,2.510,2.490,4.050,2.270,2.280,4.530,4.560,2.460,2.460,4.550,1.840,2.210; rho=1.68
+print(' ')
+print('Start by entering measured velocities (km/s) and their errors for each orientation/polarization according to the following numeration (Dunk, Saunders (1984)):')
+print('-----------------------------------------------------------------')
+print('Velocity #\t\tPropagation direction\t\tPolarization direction')
+print('-----------------------------------------------------------------')
+print('v_1' + ':\t\t\t', '[100]', '\t\t\t\t\t\t', '[100]')
+print('v_2' + ':\t\t\t', '[100]', '\t\t\t\t\t\t', '[010]')
+print('v_3' + ':\t\t\t', '[100]', '\t\t\t\t\t\t', '[001]')
+print(' ')
+print('v_4' + ':\t\t\t', '[010]', '\t\t\t\t\t\t', '[100]')
+print('v_5' + ':\t\t\t', '[010]', '\t\t\t\t\t\t', '[010]')
+print('v_6' + ':\t\t\t', '[010]', '\t\t\t\t\t\t', '[001]')
+print(' ')
+print('v_7' + ':\t\t\t', '[001]', '\t\t\t\t\t\t', '[100]')
+print('v_8' + ':\t\t\t', '[001]', '\t\t\t\t\t\t', '[010]')
+print('v_9' + ':\t\t\t', '[001]', '\t\t\t\t\t\t', '[001]')
+print(' ')
+print('v_10' + ':\t\t\t', '[101]', '\t\t\t\t\t\t', '[-101]')
+print('v_11' + ':\t\t\t', '[101]', '\t\t\t\t\t\t', '[010]')
+print('v_12' + ':\t\t\t', '[101]', '\t\t\t\t\t\t', '[101]')
+print(' ')
+print('v_13' + ':\t\t\t', '[110]', '\t\t\t\t\t\t', '[110]')
+print('v_14' + ':\t\t\t', '[110]', '\t\t\t\t\t\t', '[001]')
+print('v_15' + ':\t\t\t', '[110]', '\t\t\t\t\t\t', '[1-10]')
+print(' ')
+print('v_16' + ':\t\t\t', '[011]', '\t\t\t\t\t\t', '[011]')
+print('v_17' + ':\t\t\t', '[011]', '\t\t\t\t\t\t', '[0-11]')
+print('v_18' + ':\t\t\t', '[011]', '\t\t\t\t\t\t', '[100]')
+print('-----------------------------------------------------------------')
 
-rho=1.680
+vlst=input('1. Input the 18 velocities in the order shown above (km/s), separated by commas : ').split(',')
+elst=input('2. Input errors for the 18 velocities separated by commas: ').split(',')
+rho=float(input('3. Enter density of crystal in 10^3 kg/m^3 or g/cm^3 = '))
+e_rho=float(input('4. Enter error in density of crystal = '))
 
-#input errors for velocities (km/s) and density (10^3 kg/m^3)
-e_1=0.05
-e_2=0.05
-e_3=0.05
-e_4=0.05
-e_5=0.05
-e_6=0.05
-e_7=0.05
-e_8=0.05
-e_9=0.05
-e_10=0.05
-e_11=0.05
-e_12=0.05
-e_13=0.05
-e_14=0.05
-e_15=0.05
-e_16=0.05
-e_17=0.05
-e_18=0.05
+v_1=float(vlst[0])
+v_2=float(vlst[1])
+v_3=float(vlst[2])
+v_4=float(vlst[3])
+v_5=float(vlst[4])
+v_6=float(vlst[5])
+v_7=float(vlst[6])
+v_8=float(vlst[7])
+v_9=float(vlst[8])
+v_10=float(vlst[9])
+v_11=float(vlst[10])
+v_12=float(vlst[11])
+v_13=float(vlst[12])
+v_14=float(vlst[13])
+v_15=float(vlst[14])
+v_16=float(vlst[15])
+v_17=float(vlst[16])
+v_18=float(vlst[17])
 
-e_rho=0.05
+e_1=float(elst[0])
+e_2=float(elst[1])
+e_3=float(elst[2])
+e_4=float(elst[3])
+e_5=float(elst[4])
+e_6=float(elst[5])
+e_7=float(elst[6])
+e_8=float(elst[7])
+e_9=float(elst[8])
+e_10=float(elst[9])
+e_11=float(elst[10])
+e_12=float(elst[11])
+e_13=float(elst[12])
+e_14=float(elst[13])
+e_15=float(elst[14])
+e_16=float(elst[15])
+e_17=float(elst[16])
+e_18=float(elst[17])
 
 #first, do internal consistency checks on data (Dunk, Saunders 1984)
 LHS1 = rho*(v_4**2+v_6**2)
